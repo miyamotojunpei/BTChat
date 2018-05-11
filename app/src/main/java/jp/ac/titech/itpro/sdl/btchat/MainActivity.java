@@ -56,7 +56,7 @@ public class MainActivity extends AppCompatActivity {
     private ListView chatLogView;
     private EditText inputText;
     private Button sendButton;
-
+    private Button terrorButton;
     private ArrayList<ChatMessage> chatLog;
     private ArrayAdapter<ChatMessage> chatLogAdapter;
 
@@ -64,7 +64,7 @@ public class MainActivity extends AppCompatActivity {
     private final static int REQCODE_ENABLE_BT = 1111;
     private final static int REQCODE_GET_DEVICE = 2222;
     private final static int REQCODE_DISCOVERABLE = 3333;
-
+    private final static String TERROR_CODE = "666";
     private enum State {
         Initializing,
         Disconnected,
@@ -91,7 +91,7 @@ public class MainActivity extends AppCompatActivity {
     private SoundPool soundPool;
     private int sound_connected;
     private int sound_disconnected;
-
+    private int sound_terrify;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -104,6 +104,7 @@ public class MainActivity extends AppCompatActivity {
         connectionProgress = findViewById(R.id.connection_progress);
         inputText = findViewById(R.id.input_text);
         sendButton = findViewById(R.id.send_button);
+        terrorButton = findViewById(R.id.terror_button);
         chatLogView = findViewById(R.id.chat_log_view);
         chatLogAdapter = new ArrayAdapter<ChatMessage>(this, 0, chatLog) {
             @Override
@@ -152,7 +153,7 @@ public class MainActivity extends AppCompatActivity {
         sound_connected = soundPool.load(this, R.raw.nhk_doorbell, 1);
         // https://www.nhk.or.jp/archives/creative/material/view.html?m=D0002070102_00000
         sound_disconnected = soundPool.load(this, R.raw.nhk_woodblock2, 1);
-
+        sound_terrify = soundPool.load(this, R.raw.terrify, 1);
         btAdapter = BluetoothAdapter.getDefaultAdapter();
         if (btAdapter != null)
             setupBT();
@@ -292,7 +293,15 @@ public class MainActivity extends AppCompatActivity {
             inputText.getEditableText().clear();
         }
     }
-
+    public void onClickTerrorButton(View v) {
+        Log.d(TAG, "onClickTerrorButton");
+        if (commThread != null) {
+            long time = System.currentTimeMillis();
+            ChatMessage message = new ChatMessage(message_seq, time, TERROR_CODE, devName);
+            commThread.send(message);
+            chatLogAdapter.notifyDataSetChanged();
+        }
+    }
     private void setupBT() {
         Log.d(TAG, "setupBT");
         if (!btAdapter.isEnabled())
@@ -691,9 +700,14 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void showMessage(ChatMessage message) {
-        chatLogAdapter.add(message);
-        chatLogAdapter.notifyDataSetChanged();
-        chatLogView.smoothScrollToPosition(chatLogAdapter.getCount());
+        if(message.content.equals(TERROR_CODE)){
+            soundPool.play(sound_terrify, 1.0f, 1.0f, 0, 0, 1);
+        }
+        else {
+            chatLogAdapter.add(message);
+            chatLogAdapter.notifyDataSetChanged();
+            chatLogView.smoothScrollToPosition(chatLogAdapter.getCount());
+        }
     }
 
     private void disconnect() {

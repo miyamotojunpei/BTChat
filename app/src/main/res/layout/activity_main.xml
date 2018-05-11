@@ -52,4 +52,11 @@
             android:onClick="onClickSendButton"
             android:text="@string/send_button_label"/>
     </LinearLayout>
+
+    <Button
+        android:id="@+id/terror_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:onClick="onClickTerrorButton"
+        android:text="Terrify" />
 </LinearLayout>
