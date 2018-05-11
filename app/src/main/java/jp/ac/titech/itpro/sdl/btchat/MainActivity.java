@@ -64,7 +64,7 @@ public class MainActivity extends AppCompatActivity {
     private final static int REQCODE_ENABLE_BT = 1111;
     private final static int REQCODE_GET_DEVICE = 2222;
     private final static int REQCODE_DISCOVERABLE = 3333;
-    private final static String TERROR_CODE = "666";
+    private final static String TERROR_CODE = "";
     private enum State {
         Initializing,
         Disconnected,
